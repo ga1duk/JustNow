@@ -1,62 +1,43 @@
 fun main() {
-    agoToText(23 * 3600)
+    println(agoToText(11 * 3600))
 }
 
-fun agoToText(interval: Int) {
-    var seconds = 0
-    if (interval >= 0 && interval < 60) {
-        seconds = 1
-    } else if (interval >= 60 && interval < 60 * 60) {
-        seconds = 2
-    } else if (interval >= 60 * 60 && interval < 24 * 60 * 60) {
-        seconds = 3
-    } else if (interval >= 24 * 60 * 60 && interval < 24 * 2 * 60 * 60) {
-        seconds = 4
-    } else if (interval >= 24 * 2 * 60 * 60 && interval < 24 * 3 * 60 * 60) {
-        seconds = 5
-    } else if (interval >= 24 * 3 * 60 * 60) {
-        seconds = 6
-    }
-    when (seconds) {
-        1 -> println("был(а) только что")
-        2 -> declineMinutes(interval)
-        3 -> declineHours(interval)
-        4 -> println("был(а) в сети сегодня")
-        5 -> println("был(а) в сети вчера")
-        6 -> println("был(а) в сети давно")
+fun agoToText(seconds: Int): String {
+    return when {
+        seconds >= 0 && seconds < 60 -> "был(а) только что"
+        seconds >= 60 && seconds < 60 * 60 -> conjugateMinutes(seconds)
+        seconds >= 60 * 60 && seconds < 24 * 60 * 60 -> conjugateHours(seconds)
+        seconds >= 24 * 60 * 60 && seconds < 24 * 2 * 60 * 60 -> "был(а) в сети сегодня"
+        seconds >= 24 * 2 * 60 * 60 && seconds < 24 * 3 * 60 * 60 -> "был(а) в сети вчера"
+        seconds >= 24 * 3 * 60 * 60 -> "был(а) в сети давно"
+        else -> throw Exception("параметр seconds должен быть положительным числом")
     }
 }
 
-fun declineMinutes(interval: Int) {
-    val intervalInMinutes = interval / 60
-    val lastCharacter = intervalInMinutes % 10
-    val twoLastCharacters = intervalInMinutes % 100
-    var s = ""
-    if (interval < 60 * 60) {
-        if (lastCharacter == 1 && twoLastCharacters != 11) {
-            s = "минуту"
-        } else if ((twoLastCharacters >= 11 && twoLastCharacters <= 19) || (lastCharacter >= 5 && lastCharacter <= 9) || lastCharacter == 0) {
-            s = "минут"
-        } else {
-            s = "минуты"
-        }
-
-        println("был(а) в сети $intervalInMinutes $s назад")
+fun conjugateMinutes(seconds: Int): String {
+    val secondsInMinutes = seconds / 60
+    val lastCharacter = secondsInMinutes % 10
+    val twoLastCharacters = secondsInMinutes % 100
+    val minutes = when {
+        lastCharacter == 1 && twoLastCharacters != 11 -> "минуту"
+        (twoLastCharacters >= 11 && twoLastCharacters <= 19)
+                || (lastCharacter >= 5 && lastCharacter <= 9)
+                || lastCharacter == 0 -> "минут"
+        else -> "минуты"
     }
+    return "был(а) в сети $secondsInMinutes $minutes назад"
 }
 
-fun declineHours(interval: Int) {
-    val intervalInHours = interval / 3600
-    val lastCharacter = intervalInHours % 10
-    val twoLastCharacters = intervalInHours % 100
-    var s = ""
-    if (lastCharacter == 1 && twoLastCharacters != 11) {
-        s = "час"
-    } else if ((twoLastCharacters >= 11 && twoLastCharacters <= 19) || (lastCharacter >= 5 && lastCharacter <= 9) || lastCharacter == 0) {
-        s = "часов"
-    } else {
-        s = "часа"
+fun conjugateHours(seconds: Int): String {
+    val secondsInHours = seconds / 3600
+    val lastCharacter = secondsInHours % 10
+    val twoLastCharacters = secondsInHours % 100
+    val hours = when {
+        lastCharacter == 1 && twoLastCharacters != 11 -> "час"
+        (twoLastCharacters >= 11 && twoLastCharacters <= 19)
+                || (lastCharacter >= 5 && lastCharacter <= 9)
+                || lastCharacter == 0 -> "часов"
+        else -> "часа"
     }
-
-    println("был(а) в сети $intervalInHours $s назад")
+    return "был(а) в сети $secondsInHours $hours назад"
 }
